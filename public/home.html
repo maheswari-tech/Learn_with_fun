@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn with Fun</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(to right, indigo, violet);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .logo-text .the-new {
+            display: block;
+            font-size: 16px;
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #f7a91c;
+        }
+
+        .sign-out-btn {
+            background-color: #f7a91c;
+            color: white;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .sign-out-btn:hover {
+            background-color: #e69800;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .hero-content {
+            width: 45%;
+            padding-top: 30px;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .hero-description {
+            color: #adb5bd;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 450px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 60px;
+        }
+
+        .games-btn {
+            background-color: #0095ff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .games-btn:hover {
+            background-color: #007acc;
+        }
+
+        .profile-btn {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Student Images Section */
+        .student-images {
+            width: 50%;
+            display: flex;
+            position: relative;
+        }
+
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 15px;
+            height: 500px;
+            width: 100%;
+            position: relative;
+        }
+
+        .student-card {
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .student-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tall-card {
+            grid-row: span 2;
+        }
+
+        .purple-bg {
+            background-color: #8257e6;
+        }
+
+        .orange-bg {
+            background-color: #ff7a00;
+        }
+
+        .yellow-bg {
+            background-color: #ffd60a;
+        }
+
+        .pink-bg {
+            background-color: #ff0099;
+        }
+
+        .green-bg {
+            background-color: #4caf50;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle-1 {
+            width: 25px;
+            height: 25px;
+            background-color: #8257e6;
+            top: 20px;
+            right: 200px;
+        }
+
+        .circle-2 {
+            width: 15px;
+            height: 15px;
+            background-color: #4caf50;
+            bottom: 120px;
+            right: 30px;
+        }
+
+        .circle-3 {
+            width: 20px;
+            height: 20px;
+            background-color: #ffd60a;
+            bottom: 200px;
+            left: 190px;
+        }
+
+        /* AI Tutor Styles */
+        #ai-tutor-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        #ai-tutor {
+            width: 120px;
+            height: 120px;
+            background-image: url('data:image/jpeg;base64,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');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        #ai-tutor:hover {
+            transform: scale(1.05);
+        }
+        
+        #ai-speech-bubble {
+            background-color: white;
+            padding: 15px;
+            border-radius: 20px;
+            max-width: 250px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            font-size: 16px;
+            color: #073B4C;
+        }
+        
+        #ai-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 30px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent transparent;
+        }
+        
+        #ai-speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Guidance Styles */
+        .guidance-highlight {
+            animation: pulse 2s infinite;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(247, 169, 28, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(247, 169, 28, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(247, 169, 28, 0); }
+        }
+
+        .guidance-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 15px solid white;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg class="logo-img" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 32C12 22.059 20.059 14 30 14C39.941 14 48 22.059 48 32" stroke="white" stroke-width="2"/>
+                    <path d="M31.5 25L31.5 35" stroke="white" stroke-width="2"/>
+                    <path d="M26.5 30L36.5 30" stroke="white" stroke-width="2"/>
+                    <path d="M20 40L40 40" stroke="white" stroke-width="2"/>
+                </svg>
+                <div class="logo-text">
+                    <span class="the-new">Learn With</span>
+                    Fun
+                </div>
+            </div>
+            <nav>
+                <a href="#">About</a>
+                <a href="#">Academy</a>
+                <a href="#">Features</a>
+            </nav>
+            <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
+        </header>
+        
+        <div class="hero-section">
+            <div class="hero-content">
+                <br><br><br>
+                <h1 class="hero-title" id="welcomeTitle">Welcome!</h1>
+                <p class="hero-description">Learn with fun is a platform where students can study their subjects with games.</p>
+                <div class="hero-buttons">
+                    <button class="games-btn" id="gamesBtn">Games</button>
+                    <button class="profile-btn" id="profileBtn">Profile</button>
+                </div>
+            </div>
+            <div class="student-images">
+                <div class="image-container">
+                    <div class="student-card tall-card purple-bg">
+                        <img src="https://i.pinimg.com/736x/fc/b7/57/fcb757fc93ca27dd0d3edba7a0f68df4.jpg" alt="Boy smiling">
+                    </div>
+                    <div class="student-card orange-bg">
+                        <img src="https://images.unsplash.com/photo-1629872430082-93d8912beccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Student in uniform reading a book">
+                    </div>
+                    <div class="student-card yellow-bg">
+                        <img src="https://media.istockphoto.com/id/1392743559/photo/proud-girl-with-winner-trophy-and-medal-with-cheerfully-students-applauding-for-success-of.jpg?s=612x612&w=0&k=20&c=tgRp73NPbOpownjJKUzqXAp9zolRcxlnegdfUdPgAhw=" alt="children's achievement">
+                    </div>
+                    <div class="student-card pink-bg">
+                        <img src="https://media.licdn.com/dms/image/v2/C5612AQHkHfQlSxoW6w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1620524094197?e=2147483647&v=beta&t=kld52AMme7QJ4yu5v3ZHCWFxlW_WdRwNPBfez83iuUQ" alt="E-Learning">
+                    </div>
+                    <div class="student-card green-bg">
+                        <img src="https://static.toiimg.com/thumb/msid-94457721,width-400,resizemode-4/94457721.jpg" alt="Students with Laptop">
+                    </div>
+                    <div class="circle circle-1"></div>
+                    <div class="circle circle-2"></div>
+                    <div class="circle circle-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tutor Section -->
+    <div id="ai-tutor-container">
+        <div id="ai-speech-bubble"></div>
+        <div id="ai-tutor"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const signOutBtn = document.getElementById('signOutBtn');
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            const gamesBtn = document.getElementById('gamesBtn');
+            const profileBtn = document.getElementById('profileBtn');
+            
+            // User data
+            const userId = localStorage.getItem('userId');
+            const username = localStorage.getItem('username');
+
+            // Check if user is logged in
+            if (!userId) {
+                window.location.href = '/dashboard.html';
+            } else {
+                welcomeTitle.textContent = `Welcome ${username}!`;
+            }
+
+            // Sign out functionality
+            signOutBtn.addEventListener('click', function() {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('username');
+                window.location.href = '/dashboard.html';
+            });
+
+            // Navigation functionality
+            gamesBtn.addEventListener('click', function() {
+                window.location.href = '/games.html';
+            });
+
+            profileBtn.addEventListener('click', function() {
+                window.location.href = '/profile.html';
+            });
+
+            // AI Tutor functionality
+            const tutorMessages = {
+                welcome: `Hello ${username || 'there'}! I'm your learning guide! Let me show you around.`,
+                about: "This section tells you all about our learning platform and its mission.",
+                academy: "Here you'll find all our courses and learning programs.",
+                features: "Discover all the cool features that make learning fun here!",
+                games: "Click the blue Games button to play fun educational games!",
+                profile: "Click the Profile button to see your progress and achievements!",
+                actionGuide: "What would you like to do? I can help you get started!",
+                gamesHighlight: "Click here to play games that make learning exciting!",
+                profileHighlight: "Check your profile to see your learning progress!",
+                signOut: "Click here when you're ready to sign out."
+            };
+
+            // Speak a message from the AI tutor
+            function tutorSpeak(message, duration = 5000) {
+                const speechBubble = document.getElementById('ai-speech-bubble');
+                speechBubble.innerHTML = message + '<div class="guidance-arrow"></div>';
+                speechBubble.classList.add('show');
+                
+                // Use speech synthesis if available
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(message);
+                    const voices = window.speechSynthesis.getVoices();
+                    
+                    // Try to find a child-like voice
+                    const childVoice = voices.find(voice => 
+                        voice.name.includes('Child') || 
+                        voice.name.includes('Kids') ||
+                        voice.name.includes('Young')
+                    );
+                    
+                    if (childVoice) {
+                        utterance.voice = childVoice;
+                    } else {
+                        // Adjust settings for child-like effect
+                        utterance.pitch = 1.8;
+                        utterance.rate = 0.9;
+                    }
+                    
+                    window.speechSynthesis.speak(utterance);
+                }
+                
+                setTimeout(() => {
+                    speechBubble.classList.remove('show');
+                }, duration);
+            }
+
+            // Highlight an element with pulsing animation
+            function highlightElement(element, duration = 5000) {
+                element.classList.add('guidance-highlight');
+                setTimeout(() => {
+                    element.classList.remove('guidance-highlight');
+                }, duration);
+            }
+
+            // Show interactive guidance
+            function showInteractiveGuidance() {
+                // Initial welcome
+                setTimeout(() => {
+                    tutorSpeak(tutorMessages.welcome);
+                }, 1000);
+
+                // Explain main options after 3 seconds
+                setTimeout(() => {
+                    tutorSpeak(tutorMessages.actionGuide);
+                    highlightElement(gamesBtn);
+                    highlightElement(profileBtn);
+                }, 4000);
+
+                // Add hover explanations for navigation
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.addEventListener('mouseenter', function() {
+                        const section = this.textContent.trim().toLowerCase();
+                        tutorSpeak(tutorMessages[section] || "This section provides more information.");
+                    });
+                });
+
+                // Add hover explanations for buttons
+                gamesBtn.addEventListener('mouseenter', function() {
+                    tutorSpeak(tutorMessages.gamesHighlight);
+                });
+
+                profileBtn.addEventListener('mouseenter', function() {
+                    tutorSpeak(tutorMessages.profileHighlight);
+                });
+
+                signOutBtn.addEventListener('mouseenter', function() {
+                    tutorSpeak(tutorMessages.signOut);
+                });
+            }
+
+            // Initialize AI Tutor
+            function initTutor() {
+                // Load voices if needed
+                if (window.speechSynthesis.getVoices().length === 0) {
+                    window.speechSynthesis.onvoiceschanged = showInteractiveGuidance;
+                } else {
+                    showInteractiveGuidance();
+                }
+            }
+
+            // Start the tutor
+            initTutor();
+        });
+    </script>
+</body>
+</html>

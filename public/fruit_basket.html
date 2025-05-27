@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruit Math Adventure</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+    
+    :root {
+      --primary: #EF476F;
+      --secondary: #06D6A0;
+      --accent: #118AB2;
+      --light: #FFD166;
+      --dark: #073B4C;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(135deg, #FFEE93, #FFD166, #FF9A8B, #FF6B6B);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      margin: 0;
+      padding: 10px;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    
+    #game {
+      text-align: center;
+      width: 95%;
+      max-width: 800px;
+      height: 95%;
+      max-height: 90vh;
+      position: relative;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      border: 6px double #FF9A8B;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+    
+    h1 {
+      font-size: clamp(24px, 4vw, 36px);
+      color: var(--primary);
+      text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.8);
+      margin: 0 0 10px 0;
+      animation: bounce 2s infinite;
+      background: rgba(255,255,255,0.7);
+      padding: 10px 20px;
+      border-radius: 50px;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    @keyframes bounce {
+      0%, 100% {transform: translateY(0);}
+      50% {transform: translateY(-5px);}
+    }
+    
+    .header-area {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .score-container {
+      font-size: clamp(16px, 3vw, 22px);
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 8px 20px;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      gap: 10px;
+    }
+    
+    #score {
+      font-weight: bold;
+      color: var(--primary);
+      background: rgba(239,71,111,0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    
+    #level-display {
+      font-weight: bold;
+      color: var(--accent);
+      background: rgba(17,138,178,0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    
+    #streak-display {
+      font-weight: bold;
+      color: var(--secondary);
+      background: rgba(6,214,160,0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    
+    #question-count {
+      font-weight: bold;
+      color: var(--dark);
+      background: rgba(7,59,76,0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    
+    #problem-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 15px;
+      margin: 0 auto 15px;
+      max-width: 90%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border: 3px dashed var(--accent);
+      position: relative;
+      z-index: 2;
+    }
+    
+    #problem {
+      font-size: clamp(20px, 4vw, 32px);
+      color: var(--accent);
+      margin: 0;
+      font-weight: bold;
+    }
+    
+    #instructions {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--dark);
+      margin: 8px 0 0;
+      font-weight: bold;
+    }
+    
+    #fruit-count {
+      font-size: clamp(16px, 3vw, 20px);
+      margin: 5px 0;
+      color: var(--primary);
+      font-weight: bold;
+      background: rgba(255,255,255,0.7);
+      padding: 5px 15px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      min-height: 0;
+    }
+    
+    .fruit-sections {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      flex-grow: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    
+    .fruit-section {
+      width: 48%;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+      border: 2px solid rgba(0,0,0,0.1);
+      min-height: 0;
+    }
+    
+    .fruit-section:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .fruit-section h2 {
+      margin: 0 0 10px 0;
+      font-size: clamp(16px, 3vw, 22px);
+      color: var(--dark);
+      background: rgba(255,255,255,0.7);
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    
+    #available-fruits {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      gap: 10px;
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+      min-height: 100px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.4);
+    }
+    
+    #basket-container {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    
+    #basket-fruits {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      gap: 10px;
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+      min-height: 100px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.4);
+      position: relative;
+      z-index: 2;
+    }
+    
+    #basket-image {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: auto;
+      max-height: 40%;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.7;
+    }
+    
+    .fruit {
+      width: clamp(40px, 8vw, 60px);
+      height: clamp(40px, 8vw, 60px);
+      cursor: grab;
+      transition: all 0.3s;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+      position: relative;
+      z-index: 3;
+    }
+    
+    .fruit:hover {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,0.4));
+    }
+    
+    .fruit.dragging {
+      opacity: 0.7;
+      transform: scale(0.95);
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+    }
+    
+    #feedback {
+      font-size: clamp(18px, 3.5vw, 26px);
+      min-height: 40px;
+      margin: 10px 0;
+      text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+      padding: 8px 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.7);
+      display: inline-block;
+      transition: all 0.3s;
+    }
+    
+    .button-container {
+      margin-top: auto;
+      padding-top: 15px;
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    #submit-btn, .mode-btn {
+      background: linear-gradient(45deg, var(--secondary), var(--accent));
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: clamp(16px, 3vw, 20px);
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 0 auto;
+      box-shadow: 0 8px 20px rgba(6, 214, 160, 0.4);
+      transition: all 0.3s;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border: 2px solid rgba(255,255,255,0.5);
+      display: block;
+    }
+    
+    .mode-btn {
+      background: linear-gradient(45deg, var(--primary), var(--light));
+      box-shadow: 0 8px 20px rgba(239, 71, 111, 0.4);
+    }
+    
+    #submit-btn::before, .mode-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: 0.5s;
+      z-index: -1;
+    }
+    
+    #submit-btn:hover, .mode-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 12px 25px rgba(6, 214, 160, 0.5);
+    }
+    
+    .mode-btn:hover {
+      box-shadow: 0 12px 25px rgba(239, 71, 111, 0.5);
+    }
+    
+    #submit-btn:hover::before, .mode-btn:hover::before {
+      left: 100%;
+    }
+    
+    #submit-btn:active, .mode-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+    
+    #submit-btn:disabled {
+      background: #CCCCCC;
+      transform: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      cursor: not-allowed;
+      color: #999;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      animation: fall 3s linear forwards;
+      z-index: 10;
+    }
+    
+    @keyframes fall {
+      0% {transform: translateY(-100px) rotate(0deg); opacity: 1;}
+      100% {transform: translateY(100vh) rotate(720deg); opacity: 0;}
+    }
+    
+    .highlight {
+      animation: highlight 0.8s;
+    }
+    
+    @keyframes highlight {
+      0% {transform: scale(1); box-shadow: 0 0 0 rgba(239,71,111,0);}
+      50% {transform: scale(1.2); box-shadow: 0 0 15px rgba(239,71,111,0.7);}
+      100% {transform: scale(1); box-shadow: 0 0 0 rgba(239,71,111,0);}
+    }
+    
+    .correct {
+      animation: correct 1s;
+    }
+    
+    @keyframes correct {
+      0% {transform: scale(1); background-color: rgba(6,214,160,0);}
+      50% {transform: scale(1.1); background-color: rgba(6,214,160,0.3);}
+      100% {transform: scale(1); background-color: rgba(6,214,160,0);}
+    }
+    
+    /* Level up animation */
+    .level-up {
+      animation: levelUp 1.5s;
+    }
+    
+    @keyframes levelUp {
+      0% {transform: scale(1); opacity: 1;}
+      50% {transform: scale(1.2); opacity: 0.8; background-color: rgba(255,214,102,0.5);}
+      100% {transform: scale(1); opacity: 1;}
+    }
+    
+    /* Decorative elements */
+    .decorative {
+      position: absolute;
+      z-index: 0;
+      opacity: 0.2;
+    }
+    
+    .leaf1 {
+      top: 10%;
+      left: 5%;
+      width: 50px;
+      transform: rotate(-30deg);
+      animation: floatLeaf 8s infinite ease-in-out;
+    }
+    
+    .leaf2 {
+      bottom: 15%;
+      right: 8%;
+      width: 60px;
+      transform: rotate(20deg);
+      animation: floatLeaf 10s infinite ease-in-out 2s;
+    }
+    
+    @keyframes floatLeaf {
+      0%, 100% {transform: translateY(0) rotate(-30deg);}
+      50% {transform: translateY(-20px) rotate(-20deg);}
+    }
+    
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0,0,0,0.3);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .fruit-sections {
+        flex-direction: column;
+      }
+      
+      .fruit-section {
+        width: 100%;
+      }
+      
+      #basket-fruits {
+        min-height: 150px;
+      }
+      
+      .score-container {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+    
+    /* Mode selection screen */
+    #mode-selection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      gap: 20px;
+    }
+    
+    #mode-selection h2 {
+      font-size: clamp(20px, 4vw, 28px);
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+    
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .mode-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+    
+    .mode-btn span {
+      font-size: clamp(24px, 6vw, 40px);
+      margin-bottom: 10px;
+    }
+    
+    .mode-btn p {
+      margin: 0;
+      font-size: clamp(14px, 2.5vw, 18px);
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* AI Tutor Styles */
+    #ai-tutor-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+    
+    #ai-tutor {
+      width: 120px;
+      height: 120px;
+      background-image: url('data:image/jpeg;base64,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');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    #ai-tutor:hover {
+      transform: scale(1.05);
+    }
+    
+    #ai-tutor.active {
+      animation: bounce 0.5s, float 3s ease-in-out infinite;
+    }
+    
+    #ai-speech-bubble {
+      background-color: white;
+      padding: 15px;
+      border-radius: 20px;
+      max-width: 250px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      font-size: 16px;
+      color: var(--dark);
+    }
+    
+    #ai-speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      right: 30px;
+      border-width: 10px 10px 0;
+      border-style: solid;
+      border-color: white transparent transparent;
+    }
+    
+    #ai-speech-bubble.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    #ai-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .ai-btn {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .ai-btn:hover {
+      background-color: var(--primary);
+    }
+    
+    /* Tutorial overlay */
+    #tutorial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    
+    #tutorial-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    #tutorial-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    #tutorial-content h2 {
+      color: var(--primary);
+      margin-top: 0;
+    }
+    
+    #tutorial-content p {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    
+    #close-tutorial {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--dark);
+    }
+    
+    #tutorial-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .tutorial-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: none;
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .tutorial-btn:hover {
+      background-color: var(--primary);
+    }
+    
+    .tutorial-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    /* Tutorial step indicators */
+    #tutorial-steps {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .step-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #ddd;
+      transition: all 0.3s;
+    }
+    
+    .step-indicator.active {
+      background-color: var(--accent);
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <!-- Mode Selection Screen -->
+    <div id="mode-selection">
+      <h1>🧺 Fruit Math Adventure 🍎</h1>
+      <h2>Choose a Math Operation to Practice</h2>
+      <div class="mode-buttons">
+        <button class="mode-btn" onclick="startGame('add')">
+          <span>➕</span>
+          <p>Addition</p>
+        </button>
+        <button class="mode-btn" onclick="startGame('subtract')">
+          <span>➖</span>
+          <p>Subtraction</p>
+        </button>
+        <button class="mode-btn" onclick="startGame('multiply')">
+          <span>✖️</span>
+          <p>Multiplication</p>
+        </button>
+        <button class="mode-btn" onclick="startGame('divide')">
+          <span>➗</span>
+          <p>Division</p>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Game Screen (initially hidden) -->
+    <div id="game-screen" class="hidden">
+      <div class="header-area">
+        <h1 id="game-title">🧺 Fruit Math Adventure 🍎</h1>
+        
+        <div class="score-container">
+          <span>Question:</span>
+          <span id="question-count">1/5</span>
+          <span>Streak:</span>
+          <span id="streak-display">0</span>
+          <span>Score:</span>
+          <span id="score">0</span>
+        </div>
+      </div>
+      
+      <div id="problem-container">
+        <p id="problem">Loading...</p>
+        <p id="instructions">Please select:</p>
+      </div>
+      
+      <p id="fruit-count"></p>
+      
+      <div class="game-area">
+        <div class="fruit-sections">
+          <div class="fruit-section">
+            <h2>Available Fruits</h2>
+            <div id="available-fruits"></div>
+          </div>
+          
+          <div class="fruit-section" id="basket-container">
+            <h2>Your Basket</h2>
+            <div id="basket-fruits"></div>
+            <!-- Using a simple SVG basket that will always load -->
+            <svg id="basket-image" class="basket-image" viewBox="0 0 100 60" preserveAspectRatio="xMidYMin meet">
+              <path d="M10,20 Q50,5 90,20 L80,50 Q50,55 20,50 Z" fill="#d2b48c" stroke="#8b4513" stroke-width="2"/>
+              <path d="M30,20 L35,15 M40,20 L45,15 M50,20 L55,15 M60,20 L65,15 M70,20 L75,15" stroke="#8b4513" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div id="feedback"></div>
+        
+        <div class="button-container">
+          <button id="submit-btn">Check Answer</button>
+          <button class="mode-btn" onclick="returnToModeSelection()">Choose Another Operation</button>
+        </div>
+      </div>
+    </div>
+    
+    <img src="https://static.vecteezy.com/system/resources/previews/002/733/999/non_2x/leaf-icon-isolated-design-free-vector.jpg" class="decorative leaf1" alt="Decorative leaf">
+    <img src="https://static.vecteezy.com/system/resources/previews/011/374/890/non_2x/branch-with-leafs-foliage-free-vector.jpg" class="decorative leaf2" alt="Decorative leaf">
+  </div>
+  
+  <!-- AI Tutor Section -->
+  <div id="ai-tutor-container">
+    <div id="ai-speech-bubble"></div>
+    <div id="ai-tutor" onclick="toggleTutorial()"></div>
+  </div>
+  
+  <!-- Tutorial Overlay -->
+  <div id="tutorial-overlay">
+    <div id="tutorial-content">
+      <button id="close-tutorial" onclick="closeTutorial()">✕</button>
+      <h2>Welcome to Fruit Math Adventure!</h2>
+      <div id="tutorial-text">
+        <p>Let me show you how to play this fun math game!</p>
+      </div>
+      <div id="tutorial-steps">
+        <div class="step-indicator active" data-step="1"></div>
+        <div class="step-indicator" data-step="2"></div>
+        <div class="step-indicator" data-step="3"></div>
+        <div class="step-indicator" data-step="4"></div>
+      </div>
+      <div id="tutorial-navigation">
+        <button class="tutorial-btn" id="prev-btn" disabled>Previous</button>
+        <button class="tutorial-btn" id="next-btn">Next</button>
+      </div>
+    </div>
+  </div>
+  
+  <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+  <audio id="drop-sound" src="https://www.soundjay.com/buttons/sounds/button-21.mp3" preload="auto"></audio>
+  <audio id="success-sound" src="https://www.soundjay.com/buttons/sounds/button-23.mp3" preload="auto"></audio>
+  <audio id="levelup-sound" src="https://www.soundjay.com/buttons/sounds/button-21.mp3" preload="auto"></audio>
+  <audio id="tutor-sound" src="https://www.soundjay.com/buttons/sounds/button-01.mp3" preload="auto"></audio>
+  
+  <script>
+    // Game variables
+    let score = 0;
+    let currentQuestion = 1;
+    let currentStreak = 0;
+    let currentProblem = {};
+    let draggedFruit = null;
+    let currentOperation = '';
+    const feedback = document.getElementById('feedback');
+    const scoreDisplay = document.getElementById('score');
+    const questionCountDisplay = document.getElementById('question-count');
+    const streakDisplay = document.getElementById('streak-display');
+    const submitBtn = document.getElementById('submit-btn');
+    const instructions = document.getElementById('instructions');
+    const fruitCountDisplay = document.getElementById('fruit-count');
+    const correctSound = document.getElementById('correct-sound');
+    const wrongSound = document.getElementById('wrong-sound');
+    const dropSound = document.getElementById('drop-sound');
+    const successSound = document.getElementById('success-sound');
+    const levelupSound = document.getElementById('levelup-sound');
+    const tutorSound = document.getElementById('tutor-sound');
+    const modeSelection = document.getElementById('mode-selection');
+    const gameScreen = document.getElementById('game-screen');
+    const gameTitle = document.getElementById('game-title');
+    
+    // AI Tutor variables
+    let currentTutorialStep = 1;
+    const tutorMessages = {
+      welcome: "Hi there! I'm Professor Berry! Ready to learn some fruity math?",
+      modeSelect: "First, choose which math operation you'd like to practice!",
+      addition: "For addition, drag the correct number of each fruit to your basket!",
+      subtraction: "For subtraction, select the fruits then remove some!",
+      multiplication: "For multiplication, select groups of fruits!",
+      division: "For division, divide the fruits into equal groups!",
+      general: "Drag fruits between the areas. Click 'Check Answer' when ready!",
+      correct: "Great job! You got it right!",
+      wrong: "Almost! Try again, you'll get it!",
+      complete: "You completed the game! Try another operation!"
+    };
+    
+    // Fruit types with their values
+    const fruitTypes = {
+      '🍎': { name: 'apple', value: 1 },
+      '🍌': { name: 'banana', value: 1 },
+      '🍐': { name: 'pear', value: 1 },
+      '🍇': { name: 'grapes', value: 1 },
+      '🍓': { name: 'strawberry', value: 1 },
+      '🍊': { name: 'orange', value: 1 },
+      '🍋': { name: 'lemon', value: 1 },
+      '🍑': { name: 'peach', value: 1 }
+    };
+    
+    // Operation titles
+    const operationTitles = {
+      'add': '➕ Addition',
+      'subtract': '➖ Subtraction',
+      'multiply': '✖️ Multiplication',
+      'divide': '➗ Division'
+    };
+    
+    // Tutorial steps
+    const tutorialSteps = [
+      {
+        title: "Welcome to Fruit Math Adventure!",
+        content: "In this game, you'll solve math problems by moving fruits between baskets. It's fun and helps you practice math!"
+      },
+      {
+        title: "How to Play",
+        content: "1. Choose a math operation (addition, subtraction, etc.)<br>2. Read the problem carefully<br>3. Drag the correct fruits to your basket<br>4. Click 'Check Answer' when you're ready"
+      },
+      {
+        title: "Different Operations",
+        content: "Addition: Combine different fruits<br>Subtraction: Remove some fruits<br>Multiplication: Count groups of fruits<br>Division: Split fruits into equal groups"
+      },
+      {
+        title: "Scoring",
+        content: "Each correct answer gives you 10 points! Try to get a streak going for bonus points. The more you play, the better you'll get!"
+      }
+    ];
+    
+    // Speak a message from the AI tutor with a cartoon/child voice
+    function tutorSpeak(message) {
+      const speechBubble = document.getElementById('ai-speech-bubble');
+      speechBubble.textContent = message;
+      speechBubble.classList.add('show');
+      tutorSound.play();
+      
+      // Use the Web Speech API if available
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(message);
+        
+        // Try to find a cartoonish or child-like voice
+        const voices = window.speechSynthesis.getVoices();
+        let selectedVoice = null;
+        
+        // Look for specific voice names that might sound cartoonish or child-like
+        for (let i = 0; i < voices.length; i++) {
+          const voice = voices[i];
+          // Check for voices that might sound child-like or cartoonish
+          if (voice.name.includes('Child') || 
+              voice.name.includes('Kids') || 
+              voice.name.includes('Young') ||
+              voice.name.includes('Cartoon')) {
+            selectedVoice = voice;
+            break;
+          }
+        }
+        
+        // If no specific voice found, use settings to make it sound more cartoonish/child-like
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        } else {
+          // Adjust settings to make it sound more cartoonish/child-like
+          utterance.pitch = 1.8;  // Higher pitch (1.0 is normal, 2.0 is max)
+          utterance.rate = 0.9;    // Slightly slower rate
+        }
+        
+        // Additional settings for cartoon effect
+        utterance.volume = 1.0;
+        
+        window.speechSynthesis.speak(utterance);
+      }
+      
+      // Hide the speech bubble after some time
+      setTimeout(() => {
+        speechBubble.classList.remove('show');
+      }, 5000);
+    }
+    
+    // We need to make sure voices are loaded before using them
+    let voicesLoaded = false;
+    window.speechSynthesis.onvoiceschanged = function() {
+      voicesLoaded = true;
+    };
+    
+    // Show tutorial overlay
+    function toggleTutorial() {
+      const overlay = document.getElementById('tutorial-overlay');
+      overlay.classList.toggle('active');
+      
+      if (overlay.classList.contains('active')) {
+        showTutorialStep(1);
+        tutorSpeak("Let me show you how to play!");
+      }
+    }
+    
+    function closeTutorial() {
+      document.getElementById('tutorial-overlay').classList.remove('active');
+    }
+    
+    function showTutorialStep(step) {
+      currentTutorialStep = step;
+      const tutorialText = document.getElementById('tutorial-text');
+      const stepData = tutorialSteps[step - 1];
+      
+      tutorialText.innerHTML = `<h3>${stepData.title}</h3><p>${stepData.content}</p>`;
+      
+      // Update step indicators
+      document.querySelectorAll('.step-indicator').forEach(indicator => {
+        indicator.classList.remove('active');
+        if (parseInt(indicator.dataset.step) === step) {
+          indicator.classList.add('active');
+        }
+      });
+      
+      // Update navigation buttons
+      document.getElementById('prev-btn').disabled = step === 1;
+      document.getElementById('next-btn').textContent = step === tutorialSteps.length ? 'Finish' : 'Next';
+    }
+    
+    // Start game with selected operation
+    function startGame(operation) {
+      currentOperation = operation;
+      score = 0;
+      currentQuestion = 1;
+      currentStreak = 0;
+      
+      // Update UI
+      scoreDisplay.textContent = score;
+      streakDisplay.textContent = currentStreak;
+      questionCountDisplay.textContent = `${currentQuestion}/5`;
+      gameTitle.innerHTML = `🧺 Fruit Math Adventure - ${operationTitles[operation]} 🍎`;
+      
+      // Switch screens
+      modeSelection.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      
+      // Start the game
+      generateProblem();
+      
+      // AI Tutor welcome message
+      setTimeout(() => {
+        tutorSpeak(tutorMessages[operation] || tutorMessages.general);
+      }, 1000);
+    }
+    
+    // Return to mode selection
+    function returnToModeSelection() {
+      gameScreen.classList.add('hidden');
+      modeSelection.classList.remove('hidden');
+      tutorSpeak(tutorMessages.modeSelect);
+    }
+    
+    // Generate a new math problem based on current operation
+    function generateProblem() {
+      let num1, num2, answer;
+      let operationSymbol;
+      
+      // Set problem parameters based on operation
+      switch(currentOperation) {
+        case 'add': // Addition
+          num1 = Math.floor(Math.random() * 5) + 1;
+          num2 = Math.floor(Math.random() * 5) + 1;
+          answer = num1 + num2;
+          operationSymbol = '+';
+          break;
+        case 'subtract': // Subtraction
+          num2 = Math.floor(Math.random() * 5) + 1;
+          num1 = num2 + Math.floor(Math.random() * 5) + 1; // Ensure positive result
+          answer = num1 - num2;
+          operationSymbol = '-';
+          break;
+        case 'multiply': // Multiplication
+          num1 = Math.floor(Math.random() * 5) + 1;
+          num2 = Math.floor(Math.random() * 5) + 1;
+          answer = num1 * num2;
+          operationSymbol = '×';
+          break;
+        case 'divide': // Division
+          answer = Math.floor(Math.random() * 5) + 1;
+          num2 = Math.floor(Math.random() * 5) + 1;
+          num1 = answer * num2;
+          operationSymbol = '÷';
+          break;
+        default:
+          // Default to addition if operation is unexpected
+          num1 = Math.floor(Math.random() * 5) + 1;
+          num2 = Math.floor(Math.random() * 5) + 1;
+          answer = num1 + num2;
+          operationSymbol = '+';
+      }
+      
+      // Select two random fruit types (for addition)
+      const fruitKeys = Object.keys(fruitTypes);
+      const fruit1 = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
+      let fruit2 = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
+      
+      // Ensure we have two different fruits for addition
+      while (fruit2 === fruit1 && currentOperation === 'add') {
+        fruit2 = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
+      }
+      
+      currentProblem = {
+        num1,
+        num2,
+        answer,
+        operationSymbol,
+        fruit1,
+        fruit2,
+        requiredFruits: []
+      };
+      
+      // Create array of required fruits based on operation
+      if (currentOperation === 'add') {
+        for (let i = 0; i < num1; i++) {
+          currentProblem.requiredFruits.push(fruit1);
+        }
+        for (let i = 0; i < num2; i++) {
+          currentProblem.requiredFruits.push(fruit2);
+        }
+      } else if (currentOperation === 'subtract') {
+        // For subtraction, we need num1 fruits total, then remove num2
+        for (let i = 0; i < num1; i++) {
+          currentProblem.requiredFruits.push(fruit1);
+        }
+      } else if (currentOperation === 'multiply') {
+        // For multiplication, we need num1 groups of num2 fruits
+        for (let i = 0; i < num1 * num2; i++) {
+          currentProblem.requiredFruits.push(fruit1);
+        }
+      } else if (currentOperation === 'divide') {
+        // For division, we need num1 fruits divided into groups of num2
+        for (let i = 0; i < num1; i++) {
+          currentProblem.requiredFruits.push(fruit1);
+        }
+      }
+      
+      // Set problem text based on operation
+      let problemText = '';
+      if (currentOperation === 'add') {
+        problemText = `${num1} ${fruitTypes[fruit1].name}s ${operationSymbol} ${num2} ${fruitTypes[fruit2].name}s = ?`;
+      } else if (currentOperation === 'subtract') {
+        problemText = `${num1} ${fruitTypes[fruit1].name}s ${operationSymbol} ${num2} ${fruitTypes[fruit1].name}s = ?`;
+      } else if (currentOperation === 'multiply') {
+        problemText = `${num1} ${fruitTypes[fruit1].name}s ${operationSymbol} ${num2} = ?`;
+      } else if (currentOperation === 'divide') {
+        problemText = `${num1} ${fruitTypes[fruit1].name}s ${operationSymbol} ${num2} = ?`;
+      }
+      
+      document.getElementById('problem').textContent = problemText;
+      
+      // Set instructions based on operation
+      let instructionText = '';
+      if (currentOperation === 'add') {
+        instructionText = `Select ${num1} ${fruitTypes[fruit1].name}s and ${num2} ${fruitTypes[fruit2].name}s`;
+      } else if (currentOperation === 'subtract') {
+        instructionText = `Select ${num1} ${fruitTypes[fruit1].name}s, then remove ${num2}`;
+      } else if (currentOperation === 'multiply') {
+        instructionText = `Select ${num1} groups of ${num2} ${fruitTypes[fruit1].name}s (total ${num1 * num2} fruits)`;
+      } else if (currentOperation === 'divide') {
+        instructionText = `Select ${num1} ${fruitTypes[fruit1].name}s and group them into ${num2}s`;
+      }
+      
+      instructions.textContent = instructionText;
+      feedback.textContent = getRandomEncouragement();
+      feedback.style.color = "#118AB2";
+      
+      // Generate available fruits (mix of correct and some incorrect)
+      const availableFruitsContainer = document.getElementById('available-fruits');
+      availableFruitsContainer.innerHTML = '';
+      
+      // Add required fruits
+      currentProblem.requiredFruits.forEach(fruit => {
+        addFruitToContainer(fruit, availableFruitsContainer);
+      });
+      
+      // Add some extra fruits (not required)
+      const extraFruits = fruitKeys.filter(f => f !== fruit1 && f !== fruit2);
+      if (extraFruits.length > 0) {
+        const extraCount = Math.min(5, Math.floor(Math.random() * 5) + 1);
+        for (let i = 0; i < extraCount; i++) {
+          const extraFruit = extraFruits[Math.floor(Math.random() * extraFruits.length)];
+          addFruitToContainer(extraFruit, availableFruitsContainer);
+        }
+      }
+      
+      // Clear basket
+      document.getElementById('basket-fruits').innerHTML = '';
+      submitBtn.disabled = false;
+      
+      // Shuffle fruits in container
+      shuffleFruits(availableFruitsContainer);
+      
+      updateFruitCount();
+      updateQuestionCount();
+    }
+    
+    function getRandomEncouragement() {
+      const encouragements = [
+        "Drag the correct fruits to your basket!",
+        "Let's solve this fruit puzzle!",
+        "You've got this! Select the right fruits.",
+        "Time for some fruity math!",
+        "Can you solve this delicious problem?"
+      ];
+      return encouragements[Math.floor(Math.random() * encouragements.length)];
+    }
+    
+    // Helper function to shuffle array
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+    
+    // Shuffle fruits visually in container
+    function shuffleFruits(container) {
+      const fruits = Array.from(container.children);
+      fruits.forEach(fruit => {
+        container.appendChild(fruit);
+      });
+    }
+    
+    // Add a fruit to a container
+    function addFruitToContainer(fruit, container) {
+      const fruitElement = document.createElement('img');
+      fruitElement.src = `https://emojicdn.elk.sh/${fruit}`;
+      fruitElement.className = "fruit";
+      fruitElement.dataset.type = fruit;
+      fruitElement.draggable = true;
+      
+      // Add drag events
+      fruitElement.addEventListener('dragstart', handleDragStart);
+      fruitElement.addEventListener('dragend', handleDragEnd);
+      
+      container.appendChild(fruitElement);
+    }
+    
+    // Update fruit count display
+    function updateFruitCount() {
+      const available = document.getElementById('available-fruits').children.length;
+      const inBasket = document.getElementById('basket-fruits').children.length;
+      fruitCountDisplay.textContent = `Available: ${available} | In Basket: ${inBasket}`;
+      
+      // Visual feedback when basket has correct number
+      if (inBasket === currentProblem.requiredFruits.length) {
+        fruitCountDisplay.style.color = "#06D6A0";
+        fruitCountDisplay.style.fontWeight = "bold";
+      } else {
+        fruitCountDisplay.style.color = "#EF476F";
+        fruitCountDisplay.style.fontWeight = "normal";
+      }
+    }
+    
+    // Update question count display
+    function updateQuestionCount() {
+      questionCountDisplay.textContent = `${currentQuestion}/5`;
+      streakDisplay.textContent = currentStreak;
+      scoreDisplay.textContent = score;
+    }
+    
+    // Drag start handler
+    function handleDragStart(e) {
+      draggedFruit = e.target;
+      e.target.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', e.target.dataset.type);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    
+    // Drag end handler
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+    }
+    
+    // Set up drop zones
+    function setupDropZones() {
+      const availableFruits = document.getElementById('available-fruits');
+      const basketFruits = document.getElementById('basket-fruits');
+      
+      // Set up both containers as drop targets
+      [availableFruits, basketFruits].forEach(container => {
+        container.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          container.style.backgroundColor = "rgba(255,255,255,0.7)";
+        });
+        
+        container.addEventListener('dragleave', () => {
+          container.style.backgroundColor = "rgba(255,255,255,0.4)";
+        });
+        
+        container.addEventListener('drop', e => {
+          e.preventDefault();
+          container.style.backgroundColor = "rgba(255,255,255,0.4)";
+          
+          if (draggedFruit) {
+            // Remove from previous container
+            draggedFruit.parentNode.removeChild(draggedFruit);
+            
+            // Add to new container
+            container.appendChild(draggedFruit);
+            dropSound.play();
+            
+            // Update counts
+            updateFruitCount();
+          }
+        });
+      });
+    }
+    
+    // Check answer when submit button is clicked
+    function checkAnswer() {
+      const basketFruits = document.getElementById('basket-fruits');
+      const selectedFruits = Array.from(basketFruits.children).map(fruit => fruit.dataset.type);
+      
+      let isCorrect = false;
+      
+      // Check answer based on operation type
+      switch(currentOperation) {
+        case 'add':
+          isCorrect = checkAddition(selectedFruits);
+          break;
+        case 'subtract':
+          isCorrect = checkSubtraction(selectedFruits);
+          break;
+        case 'multiply':
+          isCorrect = checkMultiplication(selectedFruits);
+          break;
+        case 'divide':
+          isCorrect = checkDivision(selectedFruits);
+          break;
+        default:
+          isCorrect = checkAddition(selectedFruits);
+      }
+      
+      if (isCorrect) {
+        handleCorrectAnswer();
+      } else {
+        handleWrongAnswer(selectedFruits);
+      }
+      
+      submitBtn.disabled = true;
+    }
+    
+    function checkAddition(selectedFruits) {
+      const requiredCounts = countFruits(currentProblem.requiredFruits);
+      const selectedCounts = countFruits(selectedFruits);
+      
+      // Check each required fruit type
+      for (const fruit in requiredCounts) {
+        if ((selectedCounts[fruit] || 0) !== requiredCounts[fruit]) {
+          return false;
+        }
+      }
+      
+      // Check for any extra fruits that shouldn't be there
+      for (const fruit in selectedCounts) {
+        if (!requiredCounts[fruit]) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    function checkSubtraction(selectedFruits) {
+      // For subtraction, we should have (num1 - num2) fruits left
+      const expectedCount = currentProblem.num1 - currentProblem.num2;
+      return selectedFruits.length === expectedCount;
+    }
+    
+    function checkMultiplication(selectedFruits) {
+      // For multiplication, we should have num1 * num2 fruits of the same type
+      if (selectedFruits.length !== currentProblem.num1 * currentProblem.num2) {
+        return false;
+      }
+      
+      // All should be the same type
+      const firstType = selectedFruits[0];
+      return selectedFruits.every(fruit => fruit === firstType);
+    }
+    
+    function checkDivision(selectedFruits) {
+      // For division, we should have num1 fruits that can be divided into groups of num2
+      // So total should be num1 and num1 should be divisible by num2
+      if (selectedFruits.length !== currentProblem.num1) {
+        return false;
+      }
+      
+      // All should be the same type
+      const firstType = selectedFruits[0];
+      return selectedFruits.every(fruit => fruit === firstType);
+    }
+    
+    function handleCorrectAnswer() {
+      score += 10;
+      currentStreak++;
+      scoreDisplay.textContent = score;
+      streakDisplay.textContent = currentStreak;
+      
+      feedback.textContent = getRandomSuccessMessage();
+      feedback.style.color = "#06D6A0";
+      feedback.classList.add('correct');
+      correctSound.play();
+      successSound.play();
+      createConfetti(20);
+      
+      // AI Tutor feedback
+      tutorSpeak(tutorMessages.correct);
+      
+      // Animate correct fruits
+      Array.from(document.getElementById('basket-fruits').children).forEach(fruit => {
+        fruit.classList.add('highlight');
+      });
+      
+      // Move to next question
+      setTimeout(() => {
+        feedback.classList.remove('correct');
+        currentQuestion++;
+        
+        if (currentQuestion > 5) {
+          // Game completed for this operation
+          feedback.textContent = `🎉 Completed! Your score: ${score}`;
+          feedback.style.color = "#06D6A0";
+          createConfetti(50);
+          successSound.play();
+          submitBtn.disabled = true;
+          tutorSpeak(tutorMessages.complete);
+        } else {
+          generateProblem();
+        }
+      }, 2000);
+    }
+    
+    function getRandomSuccessMessage() {
+      const messages = [
+        "🎉 Correct! Great job!",
+        "🍎 Perfect! You're a fruit math whiz!",
+        "🍌 Awesome! You nailed it!",
+        "🍇 Excellent work!",
+        "🍓 Fantastic! Keep it up!"
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+    
+    function handleWrongAnswer(selectedFruits) {
+      currentStreak = 0;
+      streakDisplay.textContent = currentStreak;
+      
+      feedback.textContent = getRandomFailureMessage();
+      feedback.style.color = "#EF476F";
+      wrongSound.play();
+      
+      // AI Tutor feedback
+      tutorSpeak(tutorMessages.wrong);
+      
+      // Highlight incorrect fruits (only for addition)
+      if (currentOperation === 'add') {
+        const requiredCounts = countFruits(currentProblem.requiredFruits);
+        const selectedCounts = countFruits(selectedFruits);
+        
+        Array.from(document.getElementById('basket-fruits').children).forEach(fruit => {
+          const type = fruit.dataset.type;
+          if (!currentProblem.requiredFruits.includes(type) || 
+              (selectedCounts[type] || 0) > (requiredCounts[type] || 0)) {
+            fruit.classList.add('highlight');
+          }
+        });
+      }
+      
+      setTimeout(() => {
+        generateProblem();
+      }, 3000);
+    }
+    
+    function getRandomFailureMessage() {
+      const messages = [
+        "Oops! That's not quite right. Try again!",
+        "Not quite! Let's try another one.",
+        "Almost there! Give it another shot.",
+        "Keep trying! You'll get it next time.",
+        "Don't worry! Math takes practice."
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+    
+    // Count fruits in array
+    function countFruits(fruits) {
+      return fruits.reduce((counts, fruit) => {
+        counts[fruit] = (counts[fruit] || 0) + 1;
+        return counts;
+      }, {});
+    }
+    
+    // Create confetti effect
+    function createConfetti(count) {
+      for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = Math.random() + 's';
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => {
+          confetti.remove();
+        }, 3000);
+      }
+    }
+    
+    // Initialize game
+    window.onload = function() {
+      // Load voices first
+      if (!voicesLoaded) {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          voicesLoaded = true;
+        }
+      }
+      
+      setupDropZones();
+      submitBtn.addEventListener('click', checkAnswer);
+      
+      // Initialize AI Tutor
+      setTimeout(() => {
+        tutorSpeak(tutorMessages.welcome);
+      }, 1500);
+      
+      // Tutorial navigation
+      document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentTutorialStep < tutorialSteps.length) {
+          showTutorialStep(currentTutorialStep + 1);
+        } else {
+          closeTutorial();
+        }
+      });
+      
+      document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentTutorialStep > 1) {
+          showTutorialStep(currentTutorialStep - 1);
+        }
+      });
+      
+      // Click on step indicators
+      document.querySelectorAll('.step-indicator').forEach(indicator => {
+        indicator.addEventListener('click', () => {
+          showTutorialStep(parseInt(indicator.dataset.step));
+        });
+      });
+    };
+  </script>
+</body>
+</html>
